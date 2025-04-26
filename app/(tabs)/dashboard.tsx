@@ -149,8 +149,8 @@ export default function DashboardScreen() {
     const achievements: Achievement[] = [
       {
         id: 'first_attempt',
-        title: 'Первая попытка',
-        description: 'Сделайте свой первый латте-арт',
+        title: 'First Attempt',
+        description: 'Create your first latte art',
         icon: 'coffee',
         progress: history.length > 0 ? 1 : 0,
         total: 1,
@@ -158,8 +158,8 @@ export default function DashboardScreen() {
       },
       {
         id: 'five_attempts',
-        title: 'Пять попыток',
-        description: 'Сделайте 5 латте-артов',
+        title: 'Five Attempts',
+        description: 'Create 5 latte arts',
         icon: 'trophy',
         progress: Math.min(history.length, 5),
         total: 5,
@@ -167,8 +167,8 @@ export default function DashboardScreen() {
       },
       {
         id: 'high_score',
-        title: 'Высокий балл',
-        description: 'Получите оценку 4.5 или выше',
+        title: 'High Score',
+        description: 'Get a rating of 4.5 or higher',
         icon: 'star',
         progress: history.some(h => h.rating >= 4.5) ? 1 : 0,
         total: 1,
@@ -176,8 +176,8 @@ export default function DashboardScreen() {
       },
       {
         id: 'consistency',
-        title: 'Последовательность',
-        description: 'Сделайте 3 латте-арта подряд с оценкой 4.0+',
+        title: 'Consistency',
+        description: 'Create 3 latte arts in a row with a rating of 4.0+',
         icon: 'check-circle',
         progress: history.length >= 3 ? 
           history.slice(-3).filter(h => h.rating >= 4.0).length : 0,
@@ -304,7 +304,7 @@ export default function DashboardScreen() {
                 </View>
               </View>
               <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Достижения</Text>
+                <Text style={styles.sectionTitle}>Achievements</Text>
                 <View style={styles.achievementsContainer}>
                   {calculateAchievements.map((achievement) => (
                     <View 
