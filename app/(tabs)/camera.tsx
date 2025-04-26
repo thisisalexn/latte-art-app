@@ -40,11 +40,20 @@ export default function CameraScreen() {
           pathname: "/preview",
           params: {
             imageUri: photo.uri,
-            rating: analysis.rating.toString(),
-            feedback: analysis.feedback,
-            pattern: analysis.pattern,
-            confidence: analysis.confidence.toString(),
-            improvementTips: JSON.stringify(analysis.improvementTips || [])
+            analysisResult: JSON.stringify({
+              isCoffee: analysis.isLatteArt,
+              rating: analysis.rating,
+              pattern: analysis.pattern,
+              confidence: analysis.confidence,
+              patternComplexity: analysis.patternComplexity || 0,
+              executionScore: analysis.executionScore || 0,
+              technicalDetails: {
+                milkTexture: analysis.technicalDetails?.milkTexture || 'Not analyzed',
+                pouringTechnique: analysis.technicalDetails?.pouringTechnique || 'Not analyzed',
+                patternDefinition: analysis.technicalDetails?.patternDefinition || 'Not analyzed'
+              },
+              improvementTips: analysis.improvementTips || []
+            })
           }
         });
       } else {

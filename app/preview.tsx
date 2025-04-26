@@ -1,72 +1,115 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useHistory } from '../components/HistoryContext';
 import { FontAwesome } from '@expo/vector-icons';
 
+interface AnalysisResult {
+  isCoffee: boolean;
+  rating: number;
+  pattern: string;
+  confidence: number;
+  patternComplexity: number;
+  executionScore: number;
+  technicalDetails: {
+    milkTexture: string;
+    pouringTechnique: string;
+    patternDefinition: string;
+  };
+  improvementTips: string[];
+}
+
 export default function PreviewScreen() {
   const { 
     imageUri, 
-    rating, 
-    feedback, 
-    pattern, 
-    confidence, 
-    improvementTips,
-    patternComplexity,
-    executionScore,
-    technicalDetails
+    analysisResult
   } = useLocalSearchParams<{
     imageUri: string;
-    rating: string;
-    feedback: string;
-    pattern: string;
-    confidence: string;
-    improvementTips: string;
-    patternComplexity: string;
-    executionScore: string;
-    technicalDetails: string;
+    analysisResult: string;
   }>();
 
-  const [selectedPattern, setSelectedPattern] = useState(pattern || 'Heart');
+  const [selectedPattern, setSelectedPattern] = useState('Heart');
   const { addAttempt } = useHistory();
+  const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
 
-  const parsedImprovementTips = improvementTips ? JSON.parse(improvementTips) : [];
-  const parsedTechnicalDetails = technicalDetails ? JSON.parse(technicalDetails) : {};
+  useEffect(() => {
+    if (analysisResult) {
+      try {
+        const parsedAnalysis = JSON.parse(analysisResult);
+        setAnalysis(parsedAnalysis);
+        setSelectedPattern(parsedAnalysis.pattern);
+      } catch (error) {
+        console.error('Error parsing analysis result:', error);
+        Alert.alert('Error', 'Failed to parse analysis results');
+      }
+    }
+  }, [analysisResult]);
 
   const saveToHistory = () => {
+    if (!analysis) return;
+
     const attempt = {
       id: Date.now().toString(),
       imageUri: imageUri || '',
       date: new Date().toISOString().split('T')[0],
-      rating: Number(rating),
-      feedback: feedback || '',
+      rating: analysis.rating,
+      feedback: analysis.improvementTips.join('\n'),
       pattern: selectedPattern,
-      patternComplexity: Number(patternComplexity),
-      executionScore: Number(executionScore),
-      technicalDetails: parsedTechnicalDetails
+      patternComplexity: analysis.patternComplexity,
+      executionScore: analysis.executionScore,
+      technicalDetails: analysis.technicalDetails
     };
     addAttempt(attempt);
     router.back();
   };
+
+  if (!analysis) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingText}>Analyzing image...</Text>
+      </View>
+    );
+  }
+
+  if (!analysis.isCoffee) {
+    return (
+      <View style={styles.container}>
+        <Image source={{ uri: imageUri }} style={styles.image} />
+        <View style={styles.errorContainer}>
+          <FontAwesome name="exclamation-circle" size={48} color="#FF3B30" />
+          <Text style={styles.errorTitle}>Not a Coffee Image</Text>
+          <Text style={styles.errorText}>
+            The image doesn't appear to be a top-down view of a coffee cup. Please take a photo of your latte art from above.
+          </Text>
+          <TouchableOpacity 
+            style={styles.retryButton}
+            onPress={() => router.back()}
+          >
+            <Text style={styles.retryButtonText}>Try Again</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
       <Image source={{ uri: imageUri }} style={styles.image} />
       <View style={styles.analysisContainer}>
         <View style={styles.ratingContainer}>
-          <Text style={styles.rating}>Rating: {rating}/5</Text>
-          <Text style={styles.confidence}>Confidence: {confidence}%</Text>
+          <Text style={styles.rating}>Rating: {analysis.rating}/5</Text>
+          <Text style={styles.confidence}>Confidence: {analysis.confidence}%</Text>
         </View>
         
         <View style={styles.scoresContainer}>
           <View style={styles.scoreCard}>
             <Text style={styles.scoreLabel}>Pattern Complexity</Text>
-            <Text style={styles.scoreValue}>{patternComplexity}/5</Text>
+            <Text style={styles.scoreValue}>{analysis.patternComplexity}/5</Text>
           </View>
           <View style={styles.scoreCard}>
             <Text style={styles.scoreLabel}>Execution Score</Text>
-            <Text style={styles.scoreValue}>{executionScore}/5</Text>
+            <Text style={styles.scoreValue}>{analysis.executionScore}/5</Text>
           </View>
         </View>
 
@@ -74,15 +117,15 @@ export default function PreviewScreen() {
           <Text style={styles.sectionTitle}>Technical Details</Text>
           <View style={styles.technicalCard}>
             <Text style={styles.technicalLabel}>Milk Texture</Text>
-            <Text style={styles.technicalValue}>{parsedTechnicalDetails.milkTexture}</Text>
+            <Text style={styles.technicalValue}>{analysis.technicalDetails.milkTexture}</Text>
           </View>
           <View style={styles.technicalCard}>
             <Text style={styles.technicalLabel}>Pouring Technique</Text>
-            <Text style={styles.technicalValue}>{parsedTechnicalDetails.pouringTechnique}</Text>
+            <Text style={styles.technicalValue}>{analysis.technicalDetails.pouringTechnique}</Text>
           </View>
           <View style={styles.technicalCard}>
             <Text style={styles.technicalLabel}>Pattern Definition</Text>
-            <Text style={styles.technicalValue}>{parsedTechnicalDetails.patternDefinition}</Text>
+            <Text style={styles.technicalValue}>{analysis.technicalDetails.patternDefinition}</Text>
           </View>
         </View>
         
@@ -103,15 +146,10 @@ export default function PreviewScreen() {
           </View>
         </View>
 
-        <View style={styles.feedbackContainer}>
-          <Text style={styles.sectionTitle}>Analysis</Text>
-          <Text style={styles.feedback}>{feedback}</Text>
-        </View>
-
-        {parsedImprovementTips.length > 0 && (
+        {analysis.improvementTips.length > 0 && (
           <View style={styles.tipsContainer}>
             <Text style={styles.sectionTitle}>Improvement Tips</Text>
-            {parsedImprovementTips.map((tip: string, index: number) => (
+            {analysis.improvementTips.map((tip, index) => (
               <View key={index} style={styles.tipItem}>
                 <FontAwesome name="lightbulb-o" size={16} color="#FFD700" style={styles.tipIcon} />
                 <Text style={styles.tipText}>{tip}</Text>
@@ -132,6 +170,48 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  loadingText: {
+    fontSize: 18,
+    color: '#666',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  errorTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FF3B30',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  retryButton: {
+    backgroundColor: '#007AFF',
+    padding: 16,
+    borderRadius: 12,
+    width: '100%',
+    alignItems: 'center',
+  },
+  retryButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   image: {
     width: '100%',
@@ -230,23 +310,6 @@ const styles = StyleSheet.create({
     height: 50,
     width: '100%',
   },
-  feedbackContainer: {
-    marginBottom: 20,
-    backgroundColor: '#f5f5f5',
-    padding: 16,
-    borderRadius: 12,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#222',
-    marginBottom: 12,
-  },
-  feedback: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: '#444',
-  },
   tipsContainer: {
     marginBottom: 20,
   },
@@ -288,5 +351,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#222',
+    marginBottom: 12,
   },
 }); 

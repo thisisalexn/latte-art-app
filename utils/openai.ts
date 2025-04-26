@@ -83,8 +83,12 @@ IMPORTANT: Your response must follow this structure precisely and must include "
 
     const analysis = response.choices[0].message.content;
 
-    // Check if the image is a valid coffee image
-    if (!analysis?.includes('Is it a valid coffee image? Yes')) {
+    // Parse the analysis response
+    const lines = analysis?.split('\n') || [];
+    const isCoffee = lines.some(line => line.includes('Is it a valid coffee image? Yes'));
+    const isLatteArt = lines.some(line => line.includes('Is it latte art? Yes'));
+    
+    if (!isCoffee) {
       return {
         rating: 0,
         feedback: "This image does not appear to be a top-down view of coffee.",
@@ -97,15 +101,15 @@ IMPORTANT: Your response must follow this structure precisely and must include "
           milkTexture: "N/A",
           pouringTechnique: "N/A",
           patternDefinition: "N/A"
-        }
+        },
+        improvementTips: []
       };
     }
 
-    // Check if the image is latte art
-    if (!analysis?.includes('Is it latte art? Yes')) {
+    if (!isLatteArt) {
       return {
         rating: 0,
-        feedback: "This image does not appear to be latte art.",
+        feedback: "No latte art detected in the image.",
         isLatteArt: false,
         pattern: 'No Art',
         confidence: 0,
@@ -115,59 +119,54 @@ IMPORTANT: Your response must follow this structure precisely and must include "
           milkTexture: "N/A",
           pouringTechnique: "N/A",
           patternDefinition: "N/A"
-        }
+        },
+        improvementTips: []
       };
     }
 
     // Extract pattern
-    const patternMatch = analysis?.match(/Final classification:\s*(.*)/i);
-    const pattern = patternMatch ? patternMatch[1].trim() as 'Tulip' | 'Rosetta' | 'Heart' | 'Swan' | 'Uncertain' | 'No Art' : 'Uncertain';
+    const patternLine = lines.find(line => line.includes('Final classification:'));
+    const pattern = patternLine?.split(':')[1]?.trim() as 'Tulip' | 'Rosetta' | 'Heart' | 'Swan' | 'Uncertain' | 'No Art';
 
     // Extract confidence
-    const confidenceMatch = analysis?.match(/Confidence score:\s*(\d+)%/i);
-    const confidence = confidenceMatch ? parseInt(confidenceMatch[1], 10) : 0;
-
-    // Extract improvement tips
-    const tipsMatch = analysis?.match(/Specific Improvement Tips:([\s\S]*?)Technical Details:/i);
-    const improvementTips = tipsMatch
-      ? tipsMatch[1]
-          .split('\n')
-          .map(tip => tip.trim())
-          .filter(tip => tip.length > 0)
-      : [];
+    const confidenceLine = lines.find(line => line.includes('Confidence score:'));
+    const confidence = parseInt(confidenceLine?.split(':')[1]?.trim() || '0');
 
     // Extract technical details
-    const milkTextureMatch = analysis?.match(/Milk texture:\s*(.*)/i);
-    const pouringTechniqueMatch = analysis?.match(/Pouring technique:\s*(.*)/i);
-    const patternDefinitionMatch = analysis?.match(/Pattern definition:\s*(.*)/i);
+    const milkTextureLine = lines.find(line => line.includes('Milk texture:'));
+    const pouringTechniqueLine = lines.find(line => line.includes('Pouring technique:'));
+    const patternDefinitionLine = lines.find(line => line.includes('Pattern definition:'));
 
-    // Calculate pattern complexity (1-5)
-    const patternComplexity = pattern === 'Swan' ? 5
-                            : pattern === 'Rosetta' ? 4
-                            : pattern === 'Tulip' ? 3
-                            : pattern === 'Heart' ? 2
-                            : 1; // No Art or Uncertain
+    // Extract improvement tips
+    const tipsStartIndex = lines.findIndex(line => line.includes('Specific Improvement Tips:'));
+    const tipsEndIndex = lines.findIndex((line, index) => index > tipsStartIndex && line.includes(':'));
+    const improvementTips = lines
+      .slice(tipsStartIndex + 1, tipsEndIndex > tipsStartIndex ? tipsEndIndex : undefined)
+      .filter(line => line.trim().startsWith('-'))
+      .map(line => line.trim().substring(1).trim());
 
-    // Calculate execution score (1-5) based on confidence
-    const executionScore = Math.max(1, Math.ceil(confidence / 20));
+    // Calculate scores based on analysis
+    const patternComplexity = pattern === 'Swan' ? 5 : 
+                             pattern === 'Tulip' ? 4 : 
+                             pattern === 'Rosetta' ? 3 : 
+                             pattern === 'Heart' ? 2 : 1;
 
-    // Final rating (simple weighted average)
-    const rating = Math.ceil((confidence * 0.3 + patternComplexity * 0.3 + executionScore * 0.4) / 20);
+    const executionScore = Math.min(5, Math.max(1, Math.floor(confidence / 20)));
 
     return {
-      rating,
-      feedback: analysis || '',
+      rating: executionScore,
+      feedback: lines.find(line => line.includes('Summary:'))?.split(':')[1]?.trim() || 'No feedback available',
       isLatteArt: true,
       pattern,
       confidence,
-      improvementTips,
       patternComplexity,
       executionScore,
       technicalDetails: {
-        milkTexture: milkTextureMatch ? milkTextureMatch[1].trim() : "Not specified",
-        pouringTechnique: pouringTechniqueMatch ? pouringTechniqueMatch[1].trim() : "Not specified",
-        patternDefinition: patternDefinitionMatch ? patternDefinitionMatch[1].trim() : "Not specified"
-      }
+        milkTexture: milkTextureLine?.split(':')[1]?.trim() || 'Not analyzed',
+        pouringTechnique: pouringTechniqueLine?.split(':')[1]?.trim() || 'Not analyzed',
+        patternDefinition: patternDefinitionLine?.split(':')[1]?.trim() || 'Not analyzed'
+      },
+      improvementTips
     };
   } catch (error) {
     console.error('Error analyzing latte art:', error);
