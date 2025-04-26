@@ -91,34 +91,6 @@ export default function CameraScreen() {
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={styles.iconButton}
-            onPress={() => {
-              setFacing(facing === 'back' ? 'front' : 'back');
-            }}
-            disabled={isLoading}
-          >
-            <FontAwesome name="refresh" size={24} color="#fff" />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.iconButton,
-              flash === 'on' && styles.flashActiveButton
-            ]}
-            onPress={toggleFlash}
-            disabled={isLoading}
-          >
-            <FontAwesome
-              name="bolt"
-              size={24}
-              color={flash === 'on' ? '#FFD700' : '#fff'}
-            />
-            <Text style={[styles.flashLabel, flash === 'on' && styles.flashLabelActive]}>
-              {flash === 'on' ? 'On' : 'Off'}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
             style={[styles.captureButton, isLoading && styles.captureButtonDisabled]}
             onPress={takePicture}
             disabled={isLoading}
@@ -159,18 +131,10 @@ const styles = StyleSheet.create({
     bottom: 40,
     width: '100%',
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
     zIndex: 10,
-  },
-  iconButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   captureButton: {
     width: 70,
@@ -215,19 +179,6 @@ const styles = StyleSheet.create({
   permissionButtonText: {
     color: '#222',
     fontSize: 16,
-    fontWeight: 'bold',
-  },
-  flashActiveButton: {
-    backgroundColor: 'rgba(255, 215, 0, 0.25)', // subtle gold highlight
-  },
-  flashLabel: {
-    color: '#fff',
-    fontSize: 12,
-    marginTop: 2,
-    textAlign: 'center',
-  },
-  flashLabelActive: {
-    color: '#FFD700',
     fontWeight: 'bold',
   },
 });
