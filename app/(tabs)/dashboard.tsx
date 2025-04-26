@@ -258,10 +258,7 @@ export default function DashboardScreen() {
   }
 
   return (
-    <LinearGradient
-      colors={["#FFF8E7", "#FFFFFF"]}
-      style={styles.gradient}
-    >
+    <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <Animated.View style={{ opacity: fadeAnim }}>
           <Text style={styles.title}>Your Progress</Text>
@@ -449,13 +446,14 @@ export default function DashboardScreen() {
           )}
         </Animated.View>
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  gradient: {
+  container: {
     flex: 1,
+    backgroundColor: '#fff',
   },
   scrollContent: {
     padding: 24,

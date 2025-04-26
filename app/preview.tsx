@@ -196,67 +196,73 @@ export default function PreviewScreen() {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <Image source={{ uri: imageUri }} style={styles.image} />
-      <View style={styles.analysisContainer}>
-        <View style={styles.ratingContainer}>
-          <Text style={styles.rating}>Rating: {analysis.rating}/5</Text>
-          <Text style={styles.confidence}>Confidence: {analysis.confidence}%</Text>
-        </View>
-        
-        <View style={styles.scoresContainer}>
-          <View style={styles.scoreCard}>
-            <Text style={styles.scoreLabel}>Pattern Complexity</Text>
-            <Text style={styles.scoreValue}>{analysis.patternComplexity}/5</Text>
+    <View style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        <Image source={{ uri: imageUri }} style={styles.image} />
+        <View style={styles.analysisContainer}>
+          <View style={styles.ratingContainer}>
+            <Text style={styles.rating}>Rating: {analysis.rating}/5</Text>
+            <Text style={styles.confidence}>Confidence: {analysis.confidence}%</Text>
           </View>
-          <View style={styles.scoreCard}>
-            <Text style={styles.scoreLabel}>Execution Score</Text>
-            <Text style={styles.scoreValue}>{analysis.executionScore}/5</Text>
+          
+          <View style={styles.scoresContainer}>
+            <View style={styles.scoreCard}>
+              <Text style={styles.scoreLabel}>Pattern Complexity</Text>
+              <Text style={styles.scoreValue}>{analysis.patternComplexity}/5</Text>
+            </View>
+            <View style={styles.scoreCard}>
+              <Text style={styles.scoreLabel}>Execution Score</Text>
+              <Text style={styles.scoreValue}>{analysis.executionScore}/5</Text>
+            </View>
           </View>
-        </View>
 
-        <View style={styles.technicalContainer}>
-          <Text style={styles.sectionTitle}>Technical Details</Text>
-          <View style={styles.technicalCard}>
-            <Text style={styles.technicalLabel}>Milk Texture</Text>
-            <Text style={styles.technicalValue}>{analysis.technicalDetails.milkTexture}</Text>
+          <View style={styles.technicalContainer}>
+            <Text style={styles.sectionTitle}>Technical Details</Text>
+            <View style={styles.technicalCard}>
+              <Text style={styles.technicalLabel}>Milk Texture</Text>
+              <Text style={styles.technicalValue}>{analysis.technicalDetails.milkTexture}</Text>
+            </View>
+            <View style={styles.technicalCard}>
+              <Text style={styles.technicalLabel}>Pouring Technique</Text>
+              <Text style={styles.technicalValue}>{analysis.technicalDetails.pouringTechnique}</Text>
+            </View>
+            <View style={styles.technicalCard}>
+              <Text style={styles.technicalLabel}>Pattern Definition</Text>
+              <Text style={styles.technicalValue}>{analysis.technicalDetails.patternDefinition}</Text>
+            </View>
           </View>
-          <View style={styles.technicalCard}>
-            <Text style={styles.technicalLabel}>Pouring Technique</Text>
-            <Text style={styles.technicalValue}>{analysis.technicalDetails.pouringTechnique}</Text>
+          
+          <View style={styles.patternContainer}>
+            <Text style={styles.patternLabel}>Pattern:</Text>
+            {analysis.strictClassification && (
+              <View style={styles.classificationContainer}>
+                <Text style={styles.classificationValue}>{analysis.strictClassification}</Text>
+              </View>
+            )}
           </View>
-          <View style={styles.technicalCard}>
-            <Text style={styles.technicalLabel}>Pattern Definition</Text>
-            <Text style={styles.technicalValue}>{analysis.technicalDetails.patternDefinition}</Text>
-          </View>
-        </View>
-        
-        <View style={styles.patternContainer}>
-          <Text style={styles.patternLabel}>Pattern:</Text>
-          {analysis.strictClassification && (
-            <View style={styles.classificationContainer}>
-              <Text style={styles.classificationValue}>{analysis.strictClassification}</Text>
+
+          {analysis.improvementTips.length > 0 && (
+            <View style={styles.tipsContainer}>
+              <Text style={styles.sectionTitle}>Improvement Tips</Text>
+              {analysis.improvementTips.map((tip, index) => (
+                <View key={index} style={styles.tipItem}>
+                  <FontAwesome name="lightbulb-o" size={16} color="#FFD700" style={styles.tipIcon} />
+                  <Text style={styles.tipText}>{tip}</Text>
+                </View>
+              ))}
             </View>
           )}
         </View>
-
-        {analysis.improvementTips.length > 0 && (
-          <View style={styles.tipsContainer}>
-            <Text style={styles.sectionTitle}>Improvement Tips</Text>
-            {analysis.improvementTips.map((tip, index) => (
-              <View key={index} style={styles.tipItem}>
-                <FontAwesome name="lightbulb-o" size={16} color="#FFD700" style={styles.tipIcon} />
-                <Text style={styles.tipText}>{tip}</Text>
-              </View>
-            ))}
-          </View>
-        )}
-
-        <TouchableOpacity style={styles.button} onPress={saveToHistory}>
-          <Text style={styles.buttonText}>Save to History</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+      </ScrollView>
+      
+      <TouchableOpacity 
+        style={styles.saveButton}
+        onPress={saveToHistory}
+      >
+        <FontAwesome name="save" size={24} color="#fff" />
+        <Text style={styles.saveButtonText}>Save to History</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
@@ -264,6 +270,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  scrollView: {
+    flex: 1,
   },
   loadingContainer: {
     flex: 1,
@@ -461,20 +470,24 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     color: '#444',
   },
-  button: {
-    backgroundColor: '#007AFF',
-    padding: 16,
-    borderRadius: 12,
+  saveButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: '#DAA520', // Beige color
+    flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 16,
+    padding: 15,
+    borderRadius: 30,
+    elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
-  buttonText: {
+  saveButtonText: {
     color: '#fff',
+    marginLeft: 8,
     fontSize: 16,
     fontWeight: 'bold',
   },
