@@ -1,10 +1,13 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Animated } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Dimensions, Animated, Alert, ActivityIndicator } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { FontAwesome } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { useHistory } from '../../components/HistoryContext';
+import * as ImagePicker from 'expo-image-picker';
+import { analyzeLatteArt } from '@/utils/openai';
+import { LoadingScreen } from '@/components/LoadingScreen';
 
 // Добавляем тип для достижений
 type Achievement = {
@@ -20,6 +23,7 @@ type Achievement = {
 export default function DashboardScreen() {
   const { history } = useHistory();
   const [selectedPoint, setSelectedPoint] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const fadeAnim = React.useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {
@@ -189,6 +193,70 @@ export default function DashboardScreen() {
     return achievements;
   }, [history]);
 
+  const pickImage = async () => {
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission required', 'Please grant permission to access your photo library');
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.7,
+        base64: true,
+      });
+
+      if (!result.canceled && result.assets[0].base64) {
+        setIsLoading(true);
+        try {
+          const analysis = await analyzeLatteArt(result.assets[0].base64);
+          
+          if (!analysis.isLatteArt) {
+            Alert.alert('Not a Latte Art', 'Please select a photo of a latte art');
+            setIsLoading(false);
+            return;
+          }
+
+          router.push({
+            pathname: "/preview",
+            params: {
+              imageUri: result.assets[0].uri,
+              analysisResult: JSON.stringify({
+                isCoffee: analysis.isLatteArt,
+                rating: analysis.rating,
+                pattern: analysis.pattern,
+                confidence: analysis.confidence,
+                patternComplexity: analysis.patternComplexity || 0,
+                executionScore: analysis.executionScore || 0,
+                technicalDetails: {
+                  milkTexture: analysis.technicalDetails?.milkTexture || 'Not analyzed',
+                  pouringTechnique: analysis.technicalDetails?.pouringTechnique || 'Not analyzed',
+                  patternDefinition: analysis.technicalDetails?.patternDefinition || 'Not analyzed'
+                },
+                improvementTips: analysis.improvementTips || []
+              })
+            }
+          });
+        } catch (error) {
+          console.error('Error analyzing image:', error);
+          Alert.alert('Error', 'Failed to analyze the image. Please try again.');
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error picking image:', error);
+      Alert.alert('Error', 'Failed to pick image. Please try again.');
+    }
+  };
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
   return (
     <LinearGradient
       colors={["#FFF8E7", "#FFFFFF"]}
@@ -202,13 +270,23 @@ export default function DashboardScreen() {
               <FontAwesome name="coffee" size={64} color="#DAA520" style={{ marginBottom: 16 }} />
               <Text style={styles.emptyText}>No data yet</Text>
               <Text style={styles.emptySubtext}>Take your first photo and save your result!</Text>
-              <TouchableOpacity 
-                style={[styles.cameraButton, { marginTop: 24 }]}
-                onPress={() => router.push('/camera')}
-              >
-                <FontAwesome name="camera" size={22} color="#222" />
-                <Text style={styles.cameraButtonText}>Take a Photo</Text>
-              </TouchableOpacity>
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity 
+                  style={[styles.cameraButton, { marginRight: 12 }]}
+                  onPress={() => router.push('/camera')}
+                >
+                  <FontAwesome name="camera" size={22} color="#222" />
+                  <Text style={styles.cameraButtonText}>Take a Photo</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={[styles.cameraButton, { marginLeft: 12 }]}
+                  onPress={pickImage}
+                  disabled={isLoading}
+                >
+                  <FontAwesome name="photo" size={22} color="#222" />
+                  <Text style={styles.cameraButtonText}>Choose from Gallery</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           ) : (
             <>
@@ -331,10 +409,10 @@ export default function DashboardScreen() {
                         <Text style={styles.achievementDescription}>
                           {achievement.description}
                         </Text>
-                        <View style={styles.progressBar}>
+                        <View style={styles.achievementProgressBar}>
                           <View 
                             style={[
-                              styles.progressFill, 
+                              styles.achievementProgressFill, 
                               { 
                                 width: `${(achievement.progress / achievement.total) * 100}%`,
                                 backgroundColor: achievement.unlocked ? '#DAA520' : '#E0E0E0'
@@ -350,13 +428,23 @@ export default function DashboardScreen() {
                   ))}
                 </View>
               </View>
-              <TouchableOpacity 
-                style={styles.cameraButton}
-                onPress={() => router.push('/camera')}
-              >
-                <FontAwesome name="camera" size={22} color="#222" />
-                <Text style={styles.cameraButtonText}>Take a Photo</Text>
-              </TouchableOpacity>
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity 
+                  style={[styles.cameraButton, { marginRight: 12 }]}
+                  onPress={() => router.push('/camera')}
+                >
+                  <FontAwesome name="camera" size={22} color="#222" />
+                  <Text style={styles.cameraButtonText}>Take a Photo</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={[styles.cameraButton, { marginLeft: 12 }]}
+                  onPress={pickImage}
+                  disabled={isLoading}
+                >
+                  <FontAwesome name="photo" size={22} color="#222" />
+                  <Text style={styles.cameraButtonText}>Choose from Gallery</Text>
+                </TouchableOpacity>
+              </View>
             </>
           )}
         </Animated.View>
@@ -445,26 +533,35 @@ const styles = StyleSheet.create({
     paddingRight: 20,
     paddingLeft: 40,
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 24,
+    paddingHorizontal: 20,
+  },
   cameraButton: {
-    backgroundColor: '#FFD580', // Gold accent
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
-    borderRadius: 16,
-    marginTop: 10,
+    backgroundColor: '#FFD580',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 25,
     shadowColor: '#DAA520',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
+    shadowOpacity: 0.18,
     shadowRadius: 8,
-    elevation: 3,
+    elevation: 5,
+    marginHorizontal: 6,
+    minWidth: 160,
   },
   cameraButtonText: {
     color: '#222',
-    fontSize: 18,
-    fontWeight: '700',
-    marginLeft: 10,
-    letterSpacing: 0.2,
+    fontSize: 15,
+    fontWeight: 'bold',
+    marginLeft: 8,
+    flexShrink: 1,
   },
   emptyContainer: {
     flex: 1,
@@ -574,13 +671,13 @@ const styles = StyleSheet.create({
     color: '#999',
     marginBottom: 8,
   },
-  progressBar: {
+  achievementProgressBar: {
     height: 4,
     backgroundColor: '#F0F0F0',
     borderRadius: 2,
     marginBottom: 4,
   },
-  progressFill: {
+  achievementProgressFill: {
     height: '100%',
     borderRadius: 2,
   },
@@ -588,5 +685,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#999',
     textAlign: 'right',
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  loadingText: {
+    color: '#fff',
+    fontSize: 18,
+    marginTop: 16,
+    textAlign: 'center',
   },
 }); 

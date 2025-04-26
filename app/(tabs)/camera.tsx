@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
 import { analyzeLatteArt } from '@/utils/openai';
 import { NotLatteArtModal } from '@/components/NotLatteArtModal';
+import { LoadingScreen } from '@/components/LoadingScreen';
 
 export default function CameraScreen() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -32,6 +33,7 @@ export default function CameraScreen() {
         
         if (!analysis.isLatteArt) {
           setShowNotLatteArtModal(true);
+          setIsLoading(false);
           return;
         }
 
@@ -66,6 +68,10 @@ export default function CameraScreen() {
       setIsLoading(false);
     }
   };
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   if (!permission) {
     return (
@@ -112,12 +118,6 @@ export default function CameraScreen() {
           </TouchableOpacity>
         </View>
       </CameraView>
-      {isLoading && (
-        <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color="#FFD580" />
-          <Text style={styles.loadingText}>Analyzing your latte art...</Text>
-        </View>
-      )}
       <NotLatteArtModal 
         visible={showNotLatteArtModal} 
         onClose={() => setShowNotLatteArtModal(false)} 
@@ -195,18 +195,5 @@ const styles = StyleSheet.create({
     color: '#222',
     fontSize: 16,
     fontWeight: 'bold',
-  },
-  loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1000,
-  },
-  loadingText: {
-    color: '#fff',
-    fontSize: 18,
-    marginTop: 16,
-    textAlign: 'center',
   },
 });
