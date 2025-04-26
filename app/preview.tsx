@@ -6,19 +6,33 @@ import { useHistory } from '../components/HistoryContext';
 import { FontAwesome } from '@expo/vector-icons';
 
 export default function PreviewScreen() {
-  const { imageUri, rating, feedback, pattern, confidence, improvementTips } = useLocalSearchParams<{
+  const { 
+    imageUri, 
+    rating, 
+    feedback, 
+    pattern, 
+    confidence, 
+    improvementTips,
+    patternComplexity,
+    executionScore,
+    technicalDetails
+  } = useLocalSearchParams<{
     imageUri: string;
     rating: string;
     feedback: string;
     pattern: string;
     confidence: string;
     improvementTips: string;
+    patternComplexity: string;
+    executionScore: string;
+    technicalDetails: string;
   }>();
 
   const [selectedPattern, setSelectedPattern] = useState(pattern || 'Heart');
   const { addAttempt } = useHistory();
 
   const parsedImprovementTips = improvementTips ? JSON.parse(improvementTips) : [];
+  const parsedTechnicalDetails = technicalDetails ? JSON.parse(technicalDetails) : {};
 
   const saveToHistory = () => {
     const attempt = {
@@ -28,6 +42,9 @@ export default function PreviewScreen() {
       rating: Number(rating),
       feedback: feedback || '',
       pattern: selectedPattern,
+      patternComplexity: Number(patternComplexity),
+      executionScore: Number(executionScore),
+      technicalDetails: parsedTechnicalDetails
     };
     addAttempt(attempt);
     router.back();
@@ -40,6 +57,33 @@ export default function PreviewScreen() {
         <View style={styles.ratingContainer}>
           <Text style={styles.rating}>Rating: {rating}/5</Text>
           <Text style={styles.confidence}>Confidence: {confidence}%</Text>
+        </View>
+        
+        <View style={styles.scoresContainer}>
+          <View style={styles.scoreCard}>
+            <Text style={styles.scoreLabel}>Pattern Complexity</Text>
+            <Text style={styles.scoreValue}>{patternComplexity}/5</Text>
+          </View>
+          <View style={styles.scoreCard}>
+            <Text style={styles.scoreLabel}>Execution Score</Text>
+            <Text style={styles.scoreValue}>{executionScore}/5</Text>
+          </View>
+        </View>
+
+        <View style={styles.technicalContainer}>
+          <Text style={styles.sectionTitle}>Technical Details</Text>
+          <View style={styles.technicalCard}>
+            <Text style={styles.technicalLabel}>Milk Texture</Text>
+            <Text style={styles.technicalValue}>{parsedTechnicalDetails.milkTexture}</Text>
+          </View>
+          <View style={styles.technicalCard}>
+            <Text style={styles.technicalLabel}>Pouring Technique</Text>
+            <Text style={styles.technicalValue}>{parsedTechnicalDetails.pouringTechnique}</Text>
+          </View>
+          <View style={styles.technicalCard}>
+            <Text style={styles.technicalLabel}>Pattern Definition</Text>
+            <Text style={styles.technicalValue}>{parsedTechnicalDetails.patternDefinition}</Text>
+          </View>
         </View>
         
         <View style={styles.patternContainer}>
@@ -103,6 +147,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 20,
+    backgroundColor: '#f5f5f5',
+    padding: 16,
+    borderRadius: 12,
   },
   rating: {
     fontSize: 24,
@@ -112,6 +159,56 @@ const styles = StyleSheet.create({
   confidence: {
     fontSize: 16,
     color: '#666',
+  },
+  scoresContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  scoreCard: {
+    backgroundColor: '#f5f5f5',
+    padding: 16,
+    borderRadius: 12,
+    width: '48%',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  scoreLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 8,
+  },
+  scoreValue: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#007AFF',
+  },
+  technicalContainer: {
+    marginBottom: 20,
+  },
+  technicalCard: {
+    backgroundColor: '#f5f5f5',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  technicalLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 4,
+  },
+  technicalValue: {
+    fontSize: 16,
+    color: '#333',
   },
   patternContainer: {
     marginBottom: 20,
@@ -125,15 +222,19 @@ const styles = StyleSheet.create({
   pickerWrapper: {
     borderWidth: 1,
     borderColor: '#eee',
-    borderRadius: 8,
+    borderRadius: 12,
     backgroundColor: '#fafafa',
+    overflow: 'hidden',
   },
   picker: {
-    height: 44,
+    height: 50,
     width: '100%',
   },
   feedbackContainer: {
     marginBottom: 20,
+    backgroundColor: '#f5f5f5',
+    padding: 16,
+    borderRadius: 12,
   },
   sectionTitle: {
     fontSize: 18,
@@ -153,12 +254,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 8,
-    padding: 12,
+    padding: 16,
     backgroundColor: '#FFF8E7',
-    borderRadius: 8,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   tipIcon: {
-    marginRight: 8,
+    marginRight: 12,
   },
   tipText: {
     flex: 1,
@@ -169,9 +275,14 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#007AFF',
     padding: 16,
-    borderRadius: 10,
+    borderRadius: 12,
     alignItems: 'center',
     marginTop: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
   },
   buttonText: {
     color: '#fff',

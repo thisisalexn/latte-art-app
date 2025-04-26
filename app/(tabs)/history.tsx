@@ -37,8 +37,33 @@ export default function HistoryScreen() {
               </View>
               <View style={styles.cardContent}>
                 <Text style={styles.date}>{item.date}</Text>
-                <Text style={styles.rating}>Rating: {item.rating}/5</Text>
-                <Text style={styles.pattern}>Pattern: {item.pattern}</Text>
+                <View style={styles.ratingContainer}>
+                  <Text style={styles.rating}>Rating: {item.rating}/5</Text>
+                  <Text style={styles.pattern}>Pattern: {item.pattern}</Text>
+                </View>
+                
+                <View style={styles.scoresContainer}>
+                  <View style={styles.scoreCard}>
+                    <Text style={styles.scoreLabel}>Complexity</Text>
+                    <Text style={styles.scoreValue}>{item.patternComplexity}/5</Text>
+                  </View>
+                  <View style={styles.scoreCard}>
+                    <Text style={styles.scoreLabel}>Execution</Text>
+                    <Text style={styles.scoreValue}>{item.executionScore}/5</Text>
+                  </View>
+                </View>
+
+                <View style={styles.technicalContainer}>
+                  <Text style={styles.technicalLabel}>Milk Texture:</Text>
+                  <Text style={styles.technicalValue}>{item.technicalDetails.milkTexture}</Text>
+                  
+                  <Text style={styles.technicalLabel}>Pouring Technique:</Text>
+                  <Text style={styles.technicalValue}>{item.technicalDetails.pouringTechnique}</Text>
+                  
+                  <Text style={styles.technicalLabel}>Pattern Definition:</Text>
+                  <Text style={styles.technicalValue}>{item.technicalDetails.patternDefinition}</Text>
+                </View>
+
                 <Text style={styles.feedback}>{item.feedback}</Text>
               </View>
             </View>
@@ -108,22 +133,64 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 14,
     color: '#666',
-    marginBottom: 4,
+    marginBottom: 8,
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
   },
   rating: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#007AFF',
-    marginBottom: 8,
   },
   pattern: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#DAA520',
+  },
+  scoresContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  scoreCard: {
+    backgroundColor: '#fff',
+    padding: 8,
+    borderRadius: 8,
+    width: '48%',
+    alignItems: 'center',
+  },
+  scoreLabel: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 4,
+  },
+  scoreValue: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#007AFF',
+  },
+  technicalContainer: {
+    marginBottom: 12,
+    backgroundColor: '#fff',
+    padding: 12,
+    borderRadius: 8,
+  },
+  technicalLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 4,
+  },
+  technicalValue: {
+    fontSize: 14,
+    color: '#333',
     marginBottom: 8,
   },
   feedback: {
     fontSize: 14,
     lineHeight: 20,
+    color: '#444',
   },
 }); 

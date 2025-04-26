@@ -7,6 +7,13 @@ export type Attempt = {
   rating: number;
   feedback: string;
   pattern: string;
+  patternComplexity: number;
+  executionScore: number;
+  technicalDetails: {
+    milkTexture: string;
+    pouringTechnique: string;
+    patternDefinition: string;
+  };
 };
 
 type HistoryContextType = {
@@ -17,9 +24,11 @@ type HistoryContextType = {
 const HistoryContext = createContext<HistoryContextType | undefined>(undefined);
 
 export function useHistory() {
-  const ctx = useContext(HistoryContext);
-  if (!ctx) throw new Error('useHistory must be used within HistoryProvider');
-  return ctx;
+  const context = useContext(HistoryContext);
+  if (!context) {
+    throw new Error('useHistory must be used within a HistoryProvider');
+  }
+  return context;
 }
 
 const EXAMPLE_ATTEMPTS: Attempt[] = [
@@ -30,6 +39,13 @@ const EXAMPLE_ATTEMPTS: Attempt[] = [
     rating: 4.2,
     feedback: 'Good symmetry, but could improve milk texture',
     pattern: 'Heart',
+    patternComplexity: 2,
+    executionScore: 4,
+    technicalDetails: {
+      milkTexture: "Slightly too foamy",
+      pouringTechnique: "Good angle, but inconsistent speed",
+      patternDefinition: "Clear heart shape with minor asymmetry"
+    }
   },
   {
     id: '2',
@@ -38,6 +54,13 @@ const EXAMPLE_ATTEMPTS: Attempt[] = [
     rating: 3.8,
     feedback: 'Nice attempt at a rosetta, work on contrast',
     pattern: 'Rosetta',
+    patternComplexity: 4,
+    executionScore: 3,
+    technicalDetails: {
+      milkTexture: "Good microfoam consistency",
+      pouringTechnique: "Needs more controlled wiggling",
+      patternDefinition: "Basic rosetta structure visible"
+    }
   },
   {
     id: '3',
@@ -46,6 +69,13 @@ const EXAMPLE_ATTEMPTS: Attempt[] = [
     rating: 4.5,
     feedback: 'Excellent tulip! Perfect milk texture',
     pattern: 'Tulip',
+    patternComplexity: 3,
+    executionScore: 5,
+    technicalDetails: {
+      milkTexture: "Perfect microfoam",
+      pouringTechnique: "Excellent control and timing",
+      patternDefinition: "Clear, well-defined layers"
+    }
   },
 ];
 
