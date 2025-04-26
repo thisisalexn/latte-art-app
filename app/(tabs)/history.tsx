@@ -1,10 +1,25 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, Modal } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { useHistory } from '@/components/HistoryContext';
 
 export default function HistoryScreen() {
-  const { history } = useHistory();
+  const { history, removeAttempt } = useHistory();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const confirmDelete = (id: string) => {
+    setSelectedId(id);
+    setModalVisible(true);
+  };
+
+  const handleDelete = () => {
+    if (selectedId) {
+      removeAttempt(selectedId);
+      setSelectedId(null);
+      setModalVisible(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -21,6 +36,12 @@ export default function HistoryScreen() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View style={styles.card}>
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => confirmDelete(item.id)}
+              >
+                <FontAwesome name="trash" size={20} color="#DAA520" />
+              </TouchableOpacity>
               <View style={styles.imageContainer}>
                 <Image
                   source={{ uri: item.imageUri }}
@@ -70,6 +91,28 @@ export default function HistoryScreen() {
           )}
         />
       )}
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <FontAwesome name="warning" size={40} color="#FFD700" style={{ marginBottom: 16 }} />
+            <Text style={styles.modalTitle}>Delete Entry?</Text>
+            <Text style={styles.modalText}>Are you sure you want to delete this entry from your history?</Text>
+            <View style={styles.modalButtons}>
+              <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.confirmButton} onPress={handleDelete}>
+                <Text style={styles.confirmButtonText}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -107,6 +150,26 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 16,
     overflow: 'hidden',
+    position: 'relative',
+  },
+  deleteButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 2,
+    backgroundColor: '#fff',
+    width: 36,                // Equal width and height
+    height: 36,
+    borderRadius: 18,         // Half of width/height for a perfect circle
+    justifyContent: 'center', // Center the icon
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: '#FFD580',
+    shadowColor: '#DAA520',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.12,
+    shadowRadius: 2,
+    elevation: 2,
   },
   imageContainer: {
     width: '100%',
@@ -192,5 +255,59 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     color: '#444',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 12,
+    width: '80%',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  modalText: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 16,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  cancelButton: {
+    backgroundColor: '#ccc',
+    padding: 12,
+    borderRadius: 8,
+    flex: 1,
+    marginRight: 8,
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
+  },
+  confirmButton: {
+    backgroundColor: '#DAA520',
+    padding: 12,
+    borderRadius: 8,
+    flex: 1,
+    marginLeft: 8,
+  },
+  confirmButtonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
   },
 }); 

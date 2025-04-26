@@ -20,6 +20,7 @@ export type Attempt = {
 type HistoryContextType = {
   history: Attempt[];
   addAttempt: (attempt: Attempt) => void;
+  removeAttempt: (id: string) => void;
 };
 
 const HistoryContext = createContext<HistoryContextType | undefined>(undefined);
@@ -72,8 +73,12 @@ export function HistoryProvider({ children }: { children: ReactNode }) {
     setHistory((prev) => [attempt, ...prev]);
   };
 
+  const removeAttempt = (id: string) => {
+    setHistory((prev) => prev.filter((attempt) => attempt.id !== id));
+  };
+
   return (
-    <HistoryContext.Provider value={{ history, addAttempt }}>
+    <HistoryContext.Provider value={{ history, addAttempt, removeAttempt }}>
       {children}
     </HistoryContext.Provider>
   );
