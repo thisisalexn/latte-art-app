@@ -1,50 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, TouchableOpacity, Alert, Text, ActivityIndicator } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { StyleSheet, View, TouchableOpacity, Text, Alert, ActivityIndicator, Modal } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
-import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import * as FileSystem from 'expo-file-system';
-import { useHistory } from '@/components/HistoryContext';
+import { FontAwesome } from '@expo/vector-icons';
+import { analyzeLatteArt } from '@/utils/openai';
+import { NotLatteArtModal } from '@/components/NotLatteArtModal';
 
 export default function CameraScreen() {
   const [permission, requestPermission] = useCameraPermissions();
-  const [facing, setFacing] = useState<'front' | 'back'>('back');
   const [isLoading, setIsLoading] = useState(false);
-  const [flash, setFlash] = useState<'on' | 'off'>('off');
-  const cameraRef = useRef<any>(null);
-  const { addAttempt } = useHistory();
-
-  const saveToLocalStorage = async (uri: string) => {
-    try {
-      // Create directory if it doesn't exist
-      const directory = `${FileSystem.documentDirectory}latte_art_photos`;
-      const dirInfo = await FileSystem.getInfoAsync(directory);
-      
-      if (!dirInfo.exists) {
-        await FileSystem.makeDirectoryAsync(directory, { intermediates: true });
-      }
-
-      // Generate unique filename
-      const timestamp = new Date().getTime();
-      const filename = `latte_art_${timestamp}.jpg`;
-      const newPath = `${directory}/${filename}`;
-
-      // Copy the file to our app's directory
-      await FileSystem.copyAsync({
-        from: uri,
-        to: newPath
-      });
-
-      return newPath;
-    } catch (error) {
-      console.error('Error saving photo:', error);
-      throw new Error('Failed to save photo');
-    }
-  };
-
-  const toggleFlash = () => {
-    setFlash(prev => prev === 'off' ? 'on' : 'off');
-  };
+  const [showNotLatteArtModal, setShowNotLatteArtModal] = useState(false);
+  const cameraRef = useRef<CameraView>(null);
 
   const takePicture = async () => {
     if (!cameraRef.current) {
@@ -56,21 +22,29 @@ export default function CameraScreen() {
     try {
       const photo = await cameraRef.current.takePictureAsync({
         quality: 0.7,
-        base64: false,
+        base64: true,
         skipProcessing: true,
       });
 
-      if (photo?.uri) {
-        // Save to local storage and get the path
-        const savedPath = await saveToLocalStorage(photo.uri);
+      if (photo?.base64) {
+        // Analyze the image using OpenAI
+        const analysis = await analyzeLatteArt(photo.base64);
         
-        // Navigate to preview
+        if (!analysis.isLatteArt) {
+          setShowNotLatteArtModal(true);
+          return;
+        }
+
+        // Navigate to preview with the analysis results
         router.push({
           pathname: "/preview",
           params: {
-            imageUri: savedPath,
-            rating: "0",
-            feedback: "Analyzing your latte art..."
+            imageUri: photo.uri,
+            rating: analysis.rating.toString(),
+            feedback: analysis.feedback,
+            pattern: analysis.pattern,
+            confidence: analysis.confidence.toString(),
+            improvementTips: JSON.stringify(analysis.improvementTips || [])
           }
         });
       } else {
@@ -82,7 +56,7 @@ export default function CameraScreen() {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   if (!permission) {
     return (
@@ -108,11 +82,9 @@ export default function CameraScreen() {
 
   return (
     <View style={styles.container}>
-      <CameraView 
-        style={styles.camera} 
-        facing={facing}
-        flash={flash}
+      <CameraView
         ref={cameraRef}
+        style={styles.camera}
       >
         <View style={styles.overlay}>
           <View style={styles.guideFrame} />
@@ -159,6 +131,10 @@ export default function CameraScreen() {
           </TouchableOpacity>
         </View>
       </CameraView>
+      <NotLatteArtModal 
+        visible={showNotLatteArtModal} 
+        onClose={() => setShowNotLatteArtModal(false)} 
+      />
     </View>
   );
 }
