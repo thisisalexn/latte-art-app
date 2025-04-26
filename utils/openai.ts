@@ -2,7 +2,7 @@ import OpenAI from 'openai';
 
 // Initialize OpenAI client
 const openai = new OpenAI({
-
+  apiKey: process.env.EXPO_PUBLIC_OPENAI_API_KEY,
 });
 
 export interface LatteArtAnalysis {
