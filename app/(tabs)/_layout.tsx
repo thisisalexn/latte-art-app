@@ -41,6 +41,13 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <FontAwesome name="history" size={24} color={color} />,
         }}
       />
+      <Tabs.Screen
+        name="leaderboard"
+        options={{
+          title: 'Leaderboard',
+          tabBarIcon: ({ color }) => <FontAwesome name="trophy" size={24} color={color} />,
+        }}
+      />
     </Tabs>
   );
 }
