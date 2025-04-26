@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
   rating: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#007AFF',
+    color: '#000000',
   },
   confidence: {
     fontSize: 16,
@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
   scoreValue: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#007AFF',
+    color: '#000000',
   },
   technicalContainer: {
     marginBottom: 20,

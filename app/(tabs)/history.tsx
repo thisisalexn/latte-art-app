@@ -23,7 +23,6 @@ export default function HistoryScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Your History</Text>
       {history.length === 0 ? (
         <View style={styles.emptyContainer}>
           <FontAwesome name="coffee" size={50} color="#666" />
@@ -57,35 +56,73 @@ export default function HistoryScreen() {
                 />
               </View>
               <View style={styles.cardContent}>
-                <Text style={styles.date}>{item.date}</Text>
-                <View style={styles.ratingContainer}>
-                  <Text style={styles.rating}>Rating: {item.rating}/5</Text>
-                  <Text style={styles.pattern}>Pattern: {item.pattern}</Text>
+                <View style={styles.dateContainer}>
+                  <FontAwesome name="calendar" size={16} color="#666" style={styles.fieldIcon} />
+                  <Text style={styles.date}>{item.date}</Text>
                 </View>
+                
+                <View style={styles.separator} />
+                
+                <View style={styles.ratingContainer}>
+                  <View style={styles.ratingItem}>
+                    <FontAwesome name="star" size={16} color="#DAA520" style={styles.fieldIcon} />
+                    <Text style={styles.rating}>Rating: {item.rating}/5</Text>
+                  </View>
+                  <View style={styles.patternItem}>
+                    <FontAwesome name="coffee" size={16} color="#DAA520" style={styles.fieldIcon} />
+                    <Text style={styles.pattern}>Pattern: {item.pattern}</Text>
+                  </View>
+                </View>
+                
+                <View style={styles.separator} />
                 
                 <View style={styles.scoresContainer}>
                   <View style={styles.scoreCard}>
+                    <FontAwesome name="puzzle-piece" size={16} color="#666" style={styles.fieldIcon} />
                     <Text style={styles.scoreLabel}>Complexity</Text>
                     <Text style={styles.scoreValue}>{item.patternComplexity}/5</Text>
                   </View>
                   <View style={styles.scoreCard}>
+                    <FontAwesome name="check-circle" size={16} color="#666" style={styles.fieldIcon} />
                     <Text style={styles.scoreLabel}>Execution</Text>
                     <Text style={styles.scoreValue}>{item.executionScore}/5</Text>
                   </View>
                 </View>
 
+                <View style={styles.separator} />
+
                 <View style={styles.technicalContainer}>
-                  <Text style={styles.technicalLabel}>Milk Texture:</Text>
-                  <Text style={styles.technicalValue}>{item.technicalDetails.milkTexture}</Text>
+                  <View style={styles.technicalItem}>
+                    <FontAwesome name="tint" size={16} color="#666" style={styles.fieldIcon} />
+                    <View>
+                      <Text style={styles.technicalLabel}>Milk Texture</Text>
+                      <Text style={styles.technicalValue}>{item.technicalDetails.milkTexture}</Text>
+                    </View>
+                  </View>
                   
-                  <Text style={styles.technicalLabel}>Pouring Technique:</Text>
-                  <Text style={styles.technicalValue}>{item.technicalDetails.pouringTechnique}</Text>
+                  <View style={styles.technicalItem}>
+                    <FontAwesome name="hand-paper-o" size={16} color="#666" style={styles.fieldIcon} />
+                    <View>
+                      <Text style={styles.technicalLabel}>Pouring Technique</Text>
+                      <Text style={styles.technicalValue}>{item.technicalDetails.pouringTechnique}</Text>
+                    </View>
+                  </View>
                   
-                  <Text style={styles.technicalLabel}>Pattern Definition:</Text>
-                  <Text style={styles.technicalValue}>{item.technicalDetails.patternDefinition}</Text>
+                  <View style={styles.technicalItem}>
+                    <FontAwesome name="paint-brush" size={16} color="#666" style={styles.fieldIcon} />
+                    <View>
+                      <Text style={styles.technicalLabel}>Pattern Definition</Text>
+                      <Text style={styles.technicalValue}>{item.technicalDetails.patternDefinition}</Text>
+                    </View>
+                  </View>
                 </View>
 
-                <Text style={styles.feedback}>{item.feedback}</Text>
+                <View style={styles.separator} />
+
+                <View style={styles.feedbackContainer}>
+                  <FontAwesome name="lightbulb-o" size={16} color="#DAA520" style={styles.fieldIcon} />
+                  <Text style={styles.feedback}>{item.feedback}</Text>
+                </View>
               </View>
             </View>
           )}
@@ -122,11 +159,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
   },
   emptyContainer: {
     flex: 1,
@@ -193,10 +225,39 @@ const styles = StyleSheet.create({
   cardContent: {
     padding: 16,
   },
+  dateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  fieldIcon: {
+    marginRight: 8,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#E0E0E0',
+    marginVertical: 12,
+  },
+  ratingItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  patternItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  technicalItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  feedbackContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
   date: {
     fontSize: 14,
     color: '#666',
-    marginBottom: 8,
   },
   ratingContainer: {
     flexDirection: 'row',
@@ -206,7 +267,7 @@ const styles = StyleSheet.create({
   rating: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#007AFF',
+    color: '#000000',
   },
   pattern: {
     fontSize: 16,
@@ -220,7 +281,7 @@ const styles = StyleSheet.create({
   },
   scoreCard: {
     backgroundColor: '#fff',
-    padding: 8,
+    padding: 12,
     borderRadius: 8,
     width: '48%',
     alignItems: 'center',
@@ -233,7 +294,7 @@ const styles = StyleSheet.create({
   scoreValue: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#007AFF',
+    color: '#000000',
   },
   technicalContainer: {
     marginBottom: 12,
@@ -249,12 +310,12 @@ const styles = StyleSheet.create({
   technicalValue: {
     fontSize: 14,
     color: '#333',
-    marginBottom: 8,
   },
   feedback: {
     fontSize: 14,
     lineHeight: 20,
     color: '#444',
+    flex: 1,
   },
   modalOverlay: {
     flex: 1,
