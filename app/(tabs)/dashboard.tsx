@@ -60,10 +60,9 @@ export default function DashboardScreen() {
         datasets: [{ data: [] }],
       };
     }
-    const labels = history.slice().reverse().map((a) => a.date.slice(5));
     const data = history.slice().reverse().map((a) => a.rating);
     return {
-      labels,
+      labels: Array(data.length).fill(''), // Empty labels instead of dates
       datasets: [
         {
           data,
@@ -88,6 +87,9 @@ export default function DashboardScreen() {
       r: '6',
       strokeWidth: '2',
       stroke: '#DAA520',
+    },
+    propsForLabels: {
+      fontSize: 0, // Hide labels
     },
   };
 

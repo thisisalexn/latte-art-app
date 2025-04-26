@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type Attempt = {
   id: string;
@@ -29,6 +30,53 @@ export function useHistory() {
     throw new Error('useHistory must be used within a HistoryProvider');
   }
   return context;
+}
+
+const STORAGE_KEY = '@latte_art_history';
+
+export function HistoryProvider({ children }: { children: ReactNode }) {
+  const [history, setHistory] = useState<Attempt[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Load history from storage on mount
+  useEffect(() => {
+    const loadHistory = async () => {
+      try {
+        const storedHistory = await AsyncStorage.getItem(STORAGE_KEY);
+        if (storedHistory) {
+          setHistory(JSON.parse(storedHistory));
+        } else {
+          // Only set example data if no stored history exists
+          setHistory(EXAMPLE_ATTEMPTS);
+          await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(EXAMPLE_ATTEMPTS));
+        }
+      } catch (error: unknown) {
+        console.error('Error loading history:', error);
+      } finally {
+        setIsInitialized(true);
+      }
+    };
+
+    loadHistory();
+  }, []);
+
+  // Save history to storage whenever it changes
+  useEffect(() => {
+    if (isInitialized) {
+      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(history))
+        .catch(error => console.error('Error saving history:', error));
+    }
+  }, [history, isInitialized]);
+
+  const addAttempt = (attempt: Attempt) => {
+    setHistory((prev) => [attempt, ...prev]);
+  };
+
+  return (
+    <HistoryContext.Provider value={{ history, addAttempt }}>
+      {children}
+    </HistoryContext.Provider>
+  );
 }
 
 const EXAMPLE_ATTEMPTS: Attempt[] = [
@@ -77,24 +125,4 @@ const EXAMPLE_ATTEMPTS: Attempt[] = [
       patternDefinition: "Clear, well-defined layers"
     }
   },
-];
-
-export function HistoryProvider({ children }: { children: ReactNode }) {
-  const [history, setHistory] = useState<Attempt[]>([]);
-
-  useEffect(() => {
-    if (history.length === 0) {
-      setHistory(EXAMPLE_ATTEMPTS);
-    }
-  }, [history.length]);
-
-  const addAttempt = (attempt: Attempt) => {
-    setHistory((prev) => [attempt, ...prev]);
-  };
-
-  return (
-    <HistoryContext.Provider value={{ history, addAttempt }}>
-      {children}
-    </HistoryContext.Provider>
-  );
-} 
+]; 
