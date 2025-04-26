@@ -86,7 +86,7 @@ export default function CameraScreen() {
 
   if (!permission) {
     return (
-      <View style={styles.container}>
+      <View style={styles.centered}>
         <ActivityIndicator size="large" color="#DAA520" />
         <Text style={styles.text}>Requesting camera permission...</Text>
       </View>
@@ -95,7 +95,7 @@ export default function CameraScreen() {
 
   if (!permission.granted) {
     return (
-      <View style={styles.container}>
+      <View style={styles.centered}>
         <FontAwesome name="camera" size={50} color="#666" />
         <Text style={styles.text}>No access to camera</Text>
         <Text style={styles.subtext}>Please enable camera access in your device settings</Text>
@@ -119,25 +119,31 @@ export default function CameraScreen() {
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={styles.flipButton}
+            style={styles.iconButton}
             onPress={() => {
               setFacing(facing === 'back' ? 'front' : 'back');
             }}
             disabled={isLoading}
           >
-            <FontAwesome name="refresh" size={24} color="white" />
+            <FontAwesome name="refresh" size={24} color="#fff" />
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={styles.flashButton}
+            style={[
+              styles.iconButton,
+              flash === 'on' && styles.flashActiveButton
+            ]}
             onPress={toggleFlash}
             disabled={isLoading}
           >
             <FontAwesome
-              name={flash === 'off' ? "bolt" : "bolt"}
+              name="bolt"
               size={24}
-              color="white"
+              color={flash === 'on' ? '#FFD700' : '#fff'}
             />
+            <Text style={[styles.flashLabel, flash === 'on' && styles.flashLabelActive]}>
+              {flash === 'on' ? 'On' : 'Off'}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -146,9 +152,9 @@ export default function CameraScreen() {
             disabled={isLoading}
           >
             {isLoading ? (
-              <ActivityIndicator color="white" />
+              <ActivityIndicator color="#fff" />
             ) : (
-              <FontAwesome name="camera" size={24} color="white" />
+              <FontAwesome name="camera" size={28} color="#fff" />
             )}
           </TouchableOpacity>
         </View>
@@ -169,27 +175,20 @@ const styles = StyleSheet.create({
     width: '80%',
     height: '80%',
     borderWidth: 2,
-    borderColor: 'rgba(255, 255, 255, 0.5)',
+    borderColor: 'rgba(255, 255, 255, 0.18)',
     borderRadius: 20,
   },
   buttonContainer: {
+    position: 'absolute',
+    bottom: 40,
+    width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-around',
-    alignItems: 'flex-end',
-    marginBottom: 50,
-    backgroundColor: 'transparent',
-    width: '100%',
-    paddingHorizontal: 20,
-  },
-  flipButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    justifyContent: 'center',
     alignItems: 'center',
+    paddingHorizontal: 20,
+    zIndex: 10,
   },
-  flashButton: {
+  iconButton: {
     width: 50,
     height: 50,
     borderRadius: 25,
@@ -201,12 +200,23 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: '#007AFF',
+    backgroundColor: '#FFD580',
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#DAA520',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    elevation: 5,
   },
   captureButtonDisabled: {
     opacity: 0.7,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
   },
   text: {
     color: '#666',
@@ -221,14 +231,27 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   permissionButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#FFD580',
     padding: 16,
     borderRadius: 10,
     marginTop: 20,
   },
   permissionButtonText: {
-    color: 'white',
+    color: '#222',
     fontSize: 16,
+    fontWeight: 'bold',
+  },
+  flashActiveButton: {
+    backgroundColor: 'rgba(255, 215, 0, 0.25)', // subtle gold highlight
+  },
+  flashLabel: {
+    color: '#fff',
+    fontSize: 12,
+    marginTop: 2,
+    textAlign: 'center',
+  },
+  flashLabelActive: {
+    color: '#FFD700',
     fontWeight: 'bold',
   },
 });
