@@ -13,6 +13,7 @@ interface AnalysisResult {
   confidence: number;
   patternComplexity: number;
   executionScore: number;
+  strictClassification: string;
   technicalDetails: {
     milkTexture: string;
     pouringTechnique: string;
@@ -232,19 +233,11 @@ export default function PreviewScreen() {
         
         <View style={styles.patternContainer}>
           <Text style={styles.patternLabel}>Pattern:</Text>
-          <View style={styles.pickerWrapper}>
-            <Picker
-              selectedValue={selectedPattern}
-              onValueChange={(itemValue) => setSelectedPattern(itemValue)}
-              style={styles.picker}
-            >
-              <Picker.Item label="Heart" value="Heart" />
-              <Picker.Item label="Rosetta" value="Rosetta" />
-              <Picker.Item label="Tulip" value="Tulip" />
-              <Picker.Item label="Swan" value="Swan" />
-              <Picker.Item label="Other" value="Other" />
-            </Picker>
-          </View>
+          {analysis.strictClassification && (
+            <View style={styles.classificationContainer}>
+              <Text style={styles.classificationValue}>{analysis.strictClassification}</Text>
+            </View>
+          )}
         </View>
 
         {analysis.improvementTips.length > 0 && (
@@ -419,24 +412,29 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   patternContainer: {
+    marginTop: 20,
     marginBottom: 20,
+    paddingHorizontal: 20,
+    width: '100%',
   },
   patternLabel: {
-    fontSize: 16,
-    fontWeight: '500',
-    marginBottom: 8,
-    color: '#444',
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#222',
+    marginBottom: 10,
   },
-  pickerWrapper: {
-    borderWidth: 1,
-    borderColor: '#eee',
+  classificationContainer: {
+    backgroundColor: '#FFF8E7',
+    padding: 12,
     borderRadius: 12,
-    backgroundColor: '#fafafa',
-    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#DAA520',
+    alignItems: 'center',
   },
-  picker: {
-    height: 50,
-    width: '100%',
+  classificationValue: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#222',
   },
   tipsContainer: {
     marginBottom: 20,

@@ -49,6 +49,7 @@ export default function CameraScreen() {
               confidence: analysis.confidence,
               patternComplexity: analysis.patternComplexity || 0,
               executionScore: analysis.executionScore || 0,
+              strictClassification: analysis.pattern,
               technicalDetails: {
                 milkTexture: analysis.technicalDetails?.milkTexture || 'Not analyzed',
                 pouringTechnique: analysis.technicalDetails?.pouringTechnique || 'Not analyzed',
