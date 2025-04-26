@@ -1,50 +1,77 @@
-# Welcome to your Expo app 👋
+# Latte Art App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Welcome to the Latte Art App! This application allows users to capture and rate their latte art creations, providing a fun and interactive way to improve their skills.
 
-## Get started
+## Demo
 
-1. Install dependencies
+To try out the demo of the Latte Art App, follow these steps:
 
+1. **Clone the Repository:**
+   ```bash
+   git clone <repository-url>
+   cd latte-art-app
+   ```
+
+2. **Install Dependencies:**
+   Make sure you have [Node.js](https://nodejs.org/) and [Expo CLI](https://docs.expo.dev/get-started/installation/) installed. Then run:
    ```bash
    npm install
    ```
 
-2. Start the app
+3. **Run the App:**
+   You can run the app on different platforms using the following commands:
+   - **Start the development server:**
+     ```bash
+     npm start
+     ```
+   - **Run on Android:**
+     ```bash
+     npm run android
+     ```
+   - **Run on iOS:**
+     ```bash
+     npm run ios
+     ```
+   - **Run on Web:**
+     ```bash
+     npm run web
+     ```
 
-   ```bash
-    npx expo start
-   ```
+4. **Download Expo App:**
+   You can also download the Expo app from the [App Store](https://apps.apple.com/us/app/expo-go/id982107779) or [Google Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent). Once installed, scan the QR code provided in the terminal after running `npm start` to open the app on your device.
 
-In the output, you'll find options to open the app in a
+## Technology Stack
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+The Latte Art App is built using the following technologies:
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- **React Native**: A framework for building native apps using React.
+- **Expo**: A platform for making universal native apps for Android, iOS, and the web with JavaScript and React.
+- **TypeScript**: A typed superset of JavaScript that compiles to plain JavaScript.
+- **React Navigation**: Used for routing and navigation in the app.
+- **Jest**: A delightful JavaScript testing framework with a focus on simplicity.
 
-## Get a fresh project
+### Key Libraries
 
-When you're ready, run:
+- **@expo/vector-icons**: For using vector icons in the app.
+- **expo-camera**: To access the device's camera.
+- **react-native-svg**: For rendering SVG images.
+- **react-native-chart-kit**: For displaying charts and graphs.
+- **openai**: For integrating AI features.
 
-```bash
-npm run reset-project
-```
+## Project Structure
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+- **app/**: Contains the main application code.
+- **components/**: Reusable components used throughout the app.
+- **utils/**: Utility functions and helpers.
+- **assets/**: Images, fonts, and other static assets.
+- **constants/**: Constant values used in the app.
+- **hooks/**: Custom React hooks.
+- **scripts/**: Scripts for project maintenance.
 
-## Learn more
+## Contributing
 
-To learn more about developing your project with Expo, look at the following resources:
+We welcome contributions! Please fork the repository and submit a pull request for any improvements or bug fixes.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## License
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+This project is licensed under the MIT License.
