@@ -1,23 +1,28 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Button, Text } from 'react-native';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 
 export default function CameraScreen() {
+  const [permission, requestPermission] = useCameraPermissions();
+  const [facing, setFacing] = useState<'front' | 'back'>('back');
+
+  if (!permission) return <View />;
+  if (!permission.granted) {
+    return (
+      <View>
+        <Text>No access to camera</Text>
+        <Button title="Grant Permission" onPress={requestPermission} />
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>Camera functionality coming soon!</Text>
+    <View style={{ flex: 1 }}>
+      <CameraView style={{ flex: 1 }} facing={facing} />
+      <Button
+        title="Flip Camera"
+        onPress={() => setFacing(facing === 'back' ? 'front' : 'back')}
+      />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  text: {
-    fontSize: 16,
-    color: '#666',
-  },
-}); 
