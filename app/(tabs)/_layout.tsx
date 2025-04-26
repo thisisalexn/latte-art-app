@@ -14,17 +14,17 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="feed"
+        name="dashboard"
         options={{
-          title: 'Feed',
+          title: 'Home',
           tabBarIcon: ({ color }) => <FontAwesome name="home" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="dashboard"
+        name="feed"
         options={{
-          title: 'Dashboard',
-          tabBarIcon: ({ color }) => <FontAwesome name="bar-chart" size={24} color={color} />,
+          title: 'Feed',
+          tabBarIcon: ({ color }) => <FontAwesome name="newspaper-o" size={24} color={color} />,
         }}
       />
       <Tabs.Screen
