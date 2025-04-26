@@ -1,28 +1,45 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Image, Dimensions, TouchableOpacity } from 'react-native';
+import { BlurView } from 'expo-blur';
+
+const placeholderImages = [
+  'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
+  'https://images.unsplash.com/photo-1464983953574-0892a716854b',
+  'https://images.unsplash.com/photo-1511920170033-f8396924c348',
+  'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
+  'https://images.unsplash.com/photo-1464983953574-0892a716854b',
+  'https://images.unsplash.com/photo-1511920170033-f8396924c348',
+  'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
+  'https://images.unsplash.com/photo-1464983953574-0892a716854b',
+  'https://images.unsplash.com/photo-1511920170033-f8396924c348',
+];
+
+const numColumns = 2;
+const screenWidth = Dimensions.get('window').width;
+const imageMargin = 10;
+const imageSize = (screenWidth - imageMargin * (numColumns + 1)) / numColumns;
 
 export default function FeedScreen() {
-  // TODO: Implement feed data fetching
-  const dummyData = [
-    { id: '1', title: 'Beautiful Rosetta', user: 'CoffeeMaster', rating: 4.5 },
-    { id: '2', title: 'Perfect Heart', user: 'LatteArtist', rating: 4.8 },
-    { id: '3', title: 'Swan Design', user: 'BaristaPro', rating: 4.2 },
-  ];
-
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Latte Art Feed</Text>
       <FlatList
-        data={dummyData}
-        keyExtractor={(item) => item.id}
+        data={placeholderImages}
+        keyExtractor={(_, idx) => idx.toString()}
+        numColumns={numColumns}
+        scrollEnabled={false}
+        contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>{item.title}</Text>
-            <Text style={styles.cardUser}>by {item.user}</Text>
-            <Text style={styles.cardRating}>Rating: {item.rating}/5</Text>
+          <View style={styles.imageWrapper}>
+            <Image source={{ uri: item }} style={styles.image} />
           </View>
         )}
       />
+      <BlurView intensity={60} tint="light" style={StyleSheet.absoluteFill} />
+      <View style={styles.overlay} pointerEvents="box-none">
+        <TouchableOpacity style={styles.loginButton} activeOpacity={0.8}>
+          <Text style={styles.loginButtonText}>Log in to see other people's latte art</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -30,32 +47,52 @@ export default function FeedScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
     backgroundColor: '#fff',
+    justifyContent: 'center',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
+  listContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: imageMargin,
+    paddingBottom: 100,
   },
-  card: {
-    backgroundColor: '#f5f5f5',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
+  imageWrapper: {
+    margin: imageMargin,
+    borderRadius: 18,
+    overflow: 'hidden',
+    width: imageSize,
+    height: imageSize * 1.2,
+    backgroundColor: '#eee',
   },
-  cardTitle: {
+  image: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  overlay: {
+    position: 'absolute',
+    bottom: 40,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  loginButton: {
+    backgroundColor: '#fff',
+    paddingVertical: 18,
+    paddingHorizontal: 32,
+    borderRadius: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  loginButtonText: {
+    color: '#222',
     fontSize: 18,
-    fontWeight: 'bold',
-  },
-  cardUser: {
-    fontSize: 14,
-    color: '#666',
-    marginTop: 4,
-  },
-  cardRating: {
-    fontSize: 14,
-    color: '#007AFF',
-    marginTop: 4,
+    fontWeight: '700',
+    textAlign: 'center',
+    letterSpacing: 0.2,
   },
 }); 
