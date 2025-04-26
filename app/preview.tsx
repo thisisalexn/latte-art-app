@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert, Animated, Easing } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useLocalSearchParams, router } from 'expo-router';
 import { useHistory } from '../components/HistoryContext';
 import { FontAwesome } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface AnalysisResult {
   isCoffee: boolean;
@@ -32,13 +33,91 @@ export default function PreviewScreen() {
   const [selectedPattern, setSelectedPattern] = useState('Heart');
   const { addAttempt } = useHistory();
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const fadeAnim = React.useRef(new Animated.Value(0)).current;
+  const pulseAnim = React.useRef(new Animated.Value(1)).current;
+  const dotAnim1 = React.useRef(new Animated.Value(0)).current;
+  const dotAnim2 = React.useRef(new Animated.Value(0)).current;
+  const dotAnim3 = React.useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    // Start fade in animation
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+      }),
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 1.2,
+            duration: 1000,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 1000,
+            easing: Easing.inOut(Easing.ease),
+            useNativeDriver: true,
+          }),
+        ])
+      ),
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(dotAnim1, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(dotAnim1, {
+            toValue: 0,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+        ])
+      ),
+      Animated.loop(
+        Animated.sequence([
+          Animated.delay(200),
+          Animated.timing(dotAnim2, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(dotAnim2, {
+            toValue: 0,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+        ])
+      ),
+      Animated.loop(
+        Animated.sequence([
+          Animated.delay(400),
+          Animated.timing(dotAnim3, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(dotAnim3, {
+            toValue: 0,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+        ])
+      ),
+    ]).start();
+
     if (analysisResult) {
       try {
         const parsedAnalysis = JSON.parse(analysisResult);
         setAnalysis(parsedAnalysis);
         setSelectedPattern(parsedAnalysis.pattern);
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 2000);
       } catch (error) {
         console.error('Error parsing analysis result:', error);
         Alert.alert('Error', 'Failed to parse analysis results');
@@ -64,11 +143,33 @@ export default function PreviewScreen() {
     router.back();
   };
 
-  if (!analysis) {
+  if (!analysis || isLoading) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>Analyzing image...</Text>
-      </View>
+      <LinearGradient
+        colors={["#FFF8E7", "#FFFFFF"]}
+        style={styles.loadingContainer}
+      >
+        <Animated.View 
+          style={[
+            styles.loadingContent,
+            { 
+              opacity: fadeAnim,
+              transform: [{ scale: pulseAnim }]
+            }
+          ]}
+        >
+          <View style={styles.loadingIconContainer}>
+            <FontAwesome name="coffee" size={80} color="#DAA520" />
+            <View style={styles.loadingDots}>
+              <Animated.View style={[styles.dot, { opacity: dotAnim1 }]} />
+              <Animated.View style={[styles.dot, { opacity: dotAnim2 }]} />
+              <Animated.View style={[styles.dot, { opacity: dotAnim3 }]} />
+            </View>
+          </View>
+          <Text style={styles.loadingText}>Analyzing your latte art</Text>
+          <Text style={styles.loadingSubtext}>Please wait while we process your image</Text>
+        </Animated.View>
+      </LinearGradient>
     );
   }
 
@@ -175,11 +276,38 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+  },
+  loadingContent: {
+    alignItems: 'center',
+    padding: 24,
+  },
+  loadingIconContainer: {
+    marginBottom: 32,
+    alignItems: 'center',
+  },
+  loadingDots: {
+    flexDirection: 'row',
+    marginTop: 24,
+  },
+  dot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#DAA520',
+    marginHorizontal: 6,
   },
   loadingText: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#DAA520',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  loadingSubtext: {
     fontSize: 18,
-    color: '#666',
+    color: '#888',
+    textAlign: 'center',
+    maxWidth: 280,
   },
   errorContainer: {
     flex: 1,
