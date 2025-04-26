@@ -1,13 +1,28 @@
 import { Tabs } from 'expo-router';
 import { FontAwesome } from '@expo/vector-icons';
+import { Image, View, Text } from 'react-native';
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
+        headerTitle: () => (
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Image
+              source={require('../../assets/images/pourfect_logo.png')}
+              style={{ width: 28, height: 28, marginRight: 8 }}
+              resizeMode="contain"
+            />
+            <Text style={{ fontSize: 20, fontWeight: 'bold'}}>Pourfect</Text>
+          </View>),
+          headerStyle: {
+            backgroundColor: '#fff', // Always light
+          },
+          headerTintColor: '#222',
         tabBarActiveTintColor: '#007AFF',
         tabBarInactiveTintColor: '#8E8E93',
         tabBarStyle: {
+          backgroundColor: '#fff',
           borderTopWidth: 1,
           borderTopColor: '#E5E5EA',
         },
