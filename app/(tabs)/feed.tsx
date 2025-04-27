@@ -2,18 +2,17 @@ import React from 'react';
 import { View, Text, StyleSheet, FlatList, Image, Dimensions, TouchableOpacity } from 'react-native';
 import { BlurView } from 'expo-blur';
 
-const placeholderImages = [
-  'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
-  'https://images.unsplash.com/photo-1464983953574-0892a716854b',
-  'https://images.unsplash.com/photo-1511920170033-f8396924c348',
-  'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
-  'https://images.unsplash.com/photo-1464983953574-0892a716854b',
-  'https://images.unsplash.com/photo-1511920170033-f8396924c348',
-  'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
-  'https://images.unsplash.com/photo-1464983953574-0892a716854b',
-  'https://images.unsplash.com/photo-1511920170033-f8396924c348',
+const LATTE_ART_IMAGES = [
+  'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bGF0dGUlMjBhcnR8ZW58MHx8MHx8fDA%3D',
+  'https://images.unsplash.com/photo-1529892485617-25f63cd7b1e9?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bGF0dGUlMjBhcnR8ZW58MHx8MHx8fDA%3D',
+  'https://images.unsplash.com/photo-1681838853984-697bbb001257?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGxhdHRlJTIwYXJ0fGVufDB8fDB8fHww',
+  'https://images.unsplash.com/photo-1517705008128-361805f42e86?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGxhdHRlJTIwYXJ0fGVufDB8fDB8fHww',
+  'https://images.unsplash.com/photo-1517705008128-361805f42e86?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGxhdHRlJTIwYXJ0fGVufDB8fDB8fHww',
+  'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8bGF0dGUlMjBhcnR8ZW58MHx8MHx8fDA%3D',
+  'https://images.unsplash.com/photo-1529892485617-25f63cd7b1e9?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8bGF0dGUlMjBhcnR8ZW58MHx8MHx8fDA%3D',
+  'https://images.unsplash.com/photo-1681838853984-697bbb001257?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGxhdHRlJTIwYXJ0fGVufDB8fDB8fHww',
+  'https://images.unsplash.com/photo-1517705008128-361805f42e86?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGxhdHRlJTIwYXJ0fGVufDB8fDB8fHww'
 ];
-
 const numColumns = 2;
 const screenWidth = Dimensions.get('window').width;
 const imageMargin = 10;
@@ -23,7 +22,7 @@ export default function FeedScreen() {
   return (
     <View style={styles.container}>
       <FlatList
-        data={placeholderImages}
+        data={LATTE_ART_IMAGES}
         keyExtractor={(_, idx) => idx.toString()}
         numColumns={numColumns}
         scrollEnabled={false}
