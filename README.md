@@ -2,6 +2,9 @@
 
 Welcome to the Latte Art App! This application allows users to capture and rate their latte art creations, providing a fun and interactive way to improve their skills.
 
+## Website
+
+Check out our live landing page here: [Pourfect Website](https://pourfect.vercel.app/)
 ## Demo
 
 To try out the demo of the Latte Art App, follow these steps:
