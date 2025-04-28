@@ -1,4 +1,4 @@
-# Latte Art App
+# Pourfect
 
 Welcome to the Latte Art App! This application allows users to capture and rate their latte art creations, providing a fun and interactive way to improve their skills.
 
