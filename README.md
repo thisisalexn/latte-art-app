@@ -1,17 +1,18 @@
 # Pourfect
 
-Welcome to the Latte Art App! This application allows users to capture and rate their latte art creations, providing a fun and interactive way to improve their skills.
+Welcome to Pourfect, the AI-powered Latte Art App for aspiring baristas and coffee enthusiasts! Our app lets users capture and rate their latte art creations, providing fun, interactive and personalized feedback to help improve their skills over time. This project was developed by a team of four students during TUM.ai Makethon 2025 as part of OpenAI's open track. Built with React Native, Expo, TypeScript, and the OpenAI's API.
 
-## Website
+You can find our hackathon presentation slides in the `docs` folder: [Pitch Slides](docs/pourfect-pitch-slides.pdf)
 
-Check out our live landing page here: [Pourfect Website](https://pourfect.vercel.app/)
+Check out our presentation landing page: [Pourfect Website](https://pourfect.vercel.app/)
+
 ## Demo
 
-To try out the demo of the Latte Art App, follow these steps:
+To try out the demo of Pourfect, follow these steps:
 
 1. **Clone the Repository:**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/thisisalexn/latte-art-app.git
    cd latte-art-app
    ```
 
@@ -21,60 +22,53 @@ To try out the demo of the Latte Art App, follow these steps:
    npm install
    ```
 
-3. **Run the App:**
-   You can run the app on different platforms using the following commands:
+3. **Provide the API Key:**
+   To use the AI features of Pourfect, you need to provide an OpenAI API key. Follow these steps to set it up:
+   - Create a `.env` file in the root of your project.
+   - Add the following line to the `.env` file, replacing `your_api_key_here` with your actual API key:
+     ```
+     EXPO_PUBLIC_OPENAI_API_KEY=your_api_key_here
+     ```
+
+4. **Run the App:**
+   You can run the app using the following command:
    - **Start the development server:**
      ```bash
-     npm start
-     ```
-   - **Run on Android:**
-     ```bash
-     npm run android
-     ```
-   - **Run on iOS:**
-     ```bash
-     npm run ios
-     ```
-   - **Run on Web:**
-     ```bash
-     npm run web
+     npx expo start
      ```
 
-4. **Download Expo App:**
-   You can also download the Expo app from the [App Store](https://apps.apple.com/us/app/expo-go/id982107779) or [Google Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent). Once installed, scan the QR code provided in the terminal after running `npm start` to open the app on your device.
+5. **Download Expo App:**
+   Download the Expo app from the [App Store](https://apps.apple.com/us/app/expo-go/id982107779) or [Google Play Store](https://play.google.com/store/apps/details?id=host.exp.exponent). Once installed, scan the QR code provided in the terminal after running `npx expo start` to open the app on your device.
 
-## Technology Stack
+   ### Home Screen
+![Home Screen](docs/home.PNG)
+*The main dashboard showing your recent latte art attempts and quick actions*
 
-The Latte Art App is built using the following technologies:
+## Screenshots
 
-- **React Native**: A framework for building native apps using React.
-- **Expo**: A platform for making universal native apps for Android, iOS, and the web with JavaScript and React.
-- **TypeScript**: A typed superset of JavaScript that compiles to plain JavaScript.
-- **React Navigation**: Used for routing and navigation in the app.
-- **Jest**: A delightful JavaScript testing framework with a focus on simplicity.
+### Feed
+![Feed Screen](docs/feed.PNG)
+*Discover and learn from other baristas' creations*
 
-### Key Libraries
+### Camera
+![Camera Screen](docs/camera.PNG)
+*Capture and analyze your latte art with AI-powered feedback*
 
-- **@expo/vector-icons**: For using vector icons in the app.
-- **expo-camera**: To access the device's camera.
-- **react-native-svg**: For rendering SVG images.
-- **react-native-chart-kit**: For displaying charts and graphs.
-- **openai**: For integrating AI features.
+### History
+![History Screen](docs/history.PNG)
+*Track your progress and view past attempts with detailed feedback*
 
-## Project Structure
+### Leaderboard
+![Leaderboard Screen](docs/leaderboard.PNG)
+*Compete with other baristas and track your rankings*
 
-- **app/**: Contains the main application code.
-- **components/**: Reusable components used throughout the app.
-- **utils/**: Utility functions and helpers.
-- **assets/**: Images, fonts, and other static assets.
-- **constants/**: Constant values used in the app.
-- **hooks/**: Custom React hooks.
-- **scripts/**: Scripts for project maintenance.
+## Team
 
-## Contributing
-
-We welcome contributions! Please fork the repository and submit a pull request for any improvements or bug fixes.
+- [Alexander Nuss](https://github.com/thisisalexn)
+- [Bakir Chaban](https://github.com/Kingmopser)
+- [Emir Abdbybekov](https://github.com/EMIRABYBEKOV) 
+- [Shohzodjon Sobirov](https://github.com/shodiBoy1)
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
